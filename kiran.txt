@@ -1,0 +1,68 @@
+Setup-1
+1.	install git
+
+2. 	git --version
+	mkdir gitdemo
+	cd gitdemo
+
+3.	git config --global user.name 'Vasiahli Kulkarni'
+4.	git config --global user.email 'vaishali.kulkarni@capgemini.com'
+5.	git config -l
+
+6.	git init project1
+	cd project1 
+
+
+git branch
+git branch testing
+checkout testing
+git push origin testing
+git branch
+git checkout testing
+
+
+git push origien testbranch
+git checkout master
+git merge trainl
+
+tep 1: install prometheus
+wget https://github.com/prometheus/prometheus/releases/download/v2.14.0/prometheus-2.14.0.linux-amd64.tar.gz
+
+
+git pull
+
+
+
+
+
+ which git
+whereis java
+
+
+/usr/lib/jvm$ ls
+
+
+
+
+docker run -d \
+    --name asgard-phpmyadmin \
+    --network asgard \
+    -e PMA_HOST=asgard-mysql \
+    -p 8081:80 \
+    phpmyadmin/phpmyadmin:edge
+
+
+
+FROM php:7.2-apache
+
+RUN apt-get update && apt-get install -y
+
+RUN docker-php-ext-install mysqli pdo_mysql
+
+RUN mkdir /app \
+ && mkdir /app/moe-php-mysql-demo \
+ && mkdir /app/moe-php-mysql-demo/www
+
+COPY www/ /app/moe-php-mysql-demo/www/
+
+RUN cp -r /app/moe-php-mysql-demo/www/* /var/www/html/.

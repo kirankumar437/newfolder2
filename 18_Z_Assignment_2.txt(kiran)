@@ -1,0 +1,99 @@
+Learning Objectives:-
+Create the cron job in the cluster
+Allow the cron job to run successfully
+
+Problem Statement:-
+Your company has a simple data cleanup process that is run periodically for maintenance purposes. They would like to stop doing this manually in order to save time, so you have been asked to implement a cron job in the Kubernetes cluster to run this process. Create a cron job called cleanup-cronjob using the linuxacademycontent/data-cleanup:1 image. Have the job run every minute with the following cron expression: */1 * * * 
+
+
+vi cleanup-cronjob.yml
+
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: cleanup-cronjob
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 1	
+      template:
+        spec:
+          containers:
+          - name: my-cleanup
+            image: linuxacademycontent/data-cleanup:1
+          restartPolicy: OnFailure
+		  
+		  
+		  
+That's a work for labels.
+
+Use them on your CronJob and delete completed pods using a selector (-l flag).
+
+For example:
+
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: my-cron
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: periodic-batch-job
+            is-cron: "true"
+        spec:
+          containers:
+          - name: cron
+            image: your_image
+            imagePullPolicy: IfNotPresent
+          restartPolicy: OnFailure
+		  
+That's a work for labels.
+
+Use them on your CronJob and delete completed pods using a selector (-l flag).
+
+For example:
+
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: my-cron
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: periodic-batch-job
+            is-cron: "true"
+        spec:
+          containers:
+          - name: cron
+            image: your_image
+            imagePullPolicy: IfNotPresent
+          restartPolicy: OnFailure
+Delete all cron-labeled pods with:
+
+kubect delete pod -l is-cron
+
+
+
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: cleanup-cronjob
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: my-cleanup
+            image: linuxacademycontent/data-cleanup:1
+          restartPolicy: OnFailure

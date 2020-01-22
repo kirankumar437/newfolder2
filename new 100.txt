@@ -1,0 +1,127 @@
+vi main.tf
+
+resource "kubernetes_service" "mysql_service" {
+  metadata {
+    name = "wordpress-mysql"
+	labels {
+      app_label = "wordpress"
+	  }
+  }
+  spec {
+    selector {
+      app_label = "wordpress"
+	  mysql_tier = "mysql"
+    }
+    port {
+      port = "8081"
+      target_port = "3306"
+      node_port = "30001"
+    }
+    type = "NodePort"
+  }
+}
+
+resource "kubernetes_deployment" "mysql_deployment" {
+  metadata {
+    name = "wordpress-mysql"
+	labels {
+	app_label = "wordpress"
+	}
+  }
+
+  spec {
+    replicas = "1"
+
+    selector {
+      match_labels {
+	  app_label = "wordpress"
+	  mysql_tier = "mysql"
+      }
+    }
+
+    template {
+      metadata {
+        labels {
+		  app_label = "wordpress"
+	      mysql_tier = "mysql"
+        }
+      }
+
+      spec {
+        container {
+          name  = "mysql"
+          image = "mysql:5.7"
+          port {
+            container_port = "3306"
+          }
+		  env {
+		   name = "MYSQL_ROOT_PASSWORD"
+           value = "P4sSw0rd0!" 
+		   }
+        }
+      }
+    }
+  }
+}
+resource "kubernetes_service" "wordpress_service" {
+  metadata {
+    name = "wordpress"
+  }
+  spec {
+    selector {
+      app_label = "wordpress"
+	  mysql_tier = "mysql"
+    }
+    port {
+      port = "80"
+      target_port = "80"
+      node_port = "30002"
+    }
+    type = "NodePort"
+  }
+}
+
+resource "kubernetes_deployment" "wordpress_deployment" {
+  metadata {
+    name = "wordpress"
+  }
+
+  spec {
+    replicas = "1"
+
+    selector {
+      match_labels {
+        app_label = "wordpress"
+		wordpress_tier = "frontend"
+      }
+    }
+
+    template {
+      metadata {
+        labels {
+          app_label = "wordpress"
+		  wordpress_tier = "frontend"
+        }
+      }
+
+      spec {
+        container {
+          name  = "wordpress"
+          image = "wordpress"
+          port {
+            container_port = "80"
+          }
+		  env {
+		    name = "WORDPRESS_DB_HOST"
+            value = "wordpress-mysql"
+            name = "WORDPRESS_DB_PASSWORD"
+            value = "P4sSw0rd0!"
+         }			
+        }
+      }
+    }
+  }
+}
+
+
+

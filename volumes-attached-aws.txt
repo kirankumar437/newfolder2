@@ -1,0 +1,82 @@
+
+
+
+vi mysql-pv.yml
+	
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: aws-pv
+  labels:
+    type: aws-pv
+spec:
+  capacity:
+    storage: 3Gi
+  accessModes:
+  - ReadWriteOnce
+  awsElasticBlockStore:
+    volumeID: vol-0ecae03884d279a72
+    fsType: xfs
+	
+	
+vi mysql-pv-claim.yml
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: aws-pvc
+  labels:
+    type: aws-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+   requests:
+    storage: 1Gi
+  selector:
+    matchLabels:
+      type: aws-pv
+
+
+	  
+	  
+vi mysql-pod.yml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: redis-cloud
+spec:
+  volumes:
+  - name: cloud-storage
+    persistentVolumeClaim:
+      claimName: aws-pvc
+  containers:
+  - name: redis
+    image: redis
+    volumeMounts:
+    - name: cloud-storage
+      mountPath: /cloud/data
+	  
+	  -------------------------------------
+	  
+	  
+vi storageclass.yml
+  
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+   name: gp2
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: gp2
+  fsType: ext4 
+reclaimPolicy: Retain
+mountOptions:
+  - debug
+
+
+
+
+  kubectl apply -n kube-system -f \
+    "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"

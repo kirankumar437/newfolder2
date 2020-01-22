@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-gateway
+  labels:
+    app: data-app
+spec:
+  selector:
+   matchLabels:
+     app : data-app
+  template:
+    metadata:
+      labels: 
+        app: data-app
+    spec:
+      containers:
+      - name: nginx-ctr
+        image: prathimaambati/webapp:2 
+        ports:
+        - name: http-port
+          containerPort: 80
+		  
+		    
+kind: Service
+apiVersion: v1
+metadata:
+  name: additionapp-service
+spec:
+  type: NodePort
+  selector:
+    app: additionapp-service
+  ports:
+  - protocol: TCP
+    targetPort: 8090
+    port: 8090
+    nodePort: 30809
+	
+---	
+	
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: additionapp-deployment
+  labels:
+    app: additionapp-service
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: additionapp-service
+  template:
+    metadata:
+      labels:
+        app: additionapp-service
+    spec:
+      containers:
+      - name: additionapp-service
+        image: prathimaambati/additionapp:0.8
+        ports:
+        - containerPort: 8090 
+ 
